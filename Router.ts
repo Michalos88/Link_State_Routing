@@ -42,6 +42,8 @@ class router{
     public tick : number;
     public started :boolean;
     public packetsqn :any;
+    public direct_network_names: any;
+
     /*public receivedFROM : number;*/
 
     constructor(){
@@ -49,6 +51,7 @@ class router{
         this.started = true;
         this.graph_adj_lists = {};
         this.packetsqn = {};
+        this.direct_network_names = {};
         /*this.receivedFROM = null;*/
     }
 
@@ -59,7 +62,7 @@ class router{
                 if (this.packetsqn[pack.id] != undefined){
                     if(this.packetsqn[pack.id] < pack.sqn){
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
-                        this.comparePackets(pack);
+                        this.compareInformation(pack);
 
                     }
                     else{
@@ -69,8 +72,8 @@ class router{
                 }
                 else{
                     this.packetsqn[pack.id] = pack.sqn;// updating highest packet sqn
-                    console.log('new pack sqn2')
-
+                    console.log('new pack sqn2');
+                    this.compareInformation(pack);
                 }
 
             }
@@ -78,19 +81,42 @@ class router{
     }
 
 
-    private comparePackets(packet:LSP){
+    private compareInformation(packet:LSP){
         //Recreate packet org network from LSP list data
         if (packet.list == undefined){
             console.log("Error: LSP list is empty");
-            return false
+            return null
         }
+
         else{
             for(let x in packet.list){
-                ;
+                this.direct_network_names[x] = packet.list[x].name
+                switch(undefined){
+                    case this.graph_adj_lists[x]:
+                        this.graph_adj_lists[x] = {};
+                        break;
+                    case this.graph_adj_lists[packet.id]:
+                        this.graph_adj_lists[packet.id] = {};
+                        break;
+
+                }
+                // Build undirected graph
+                this.graph_adj_lists[packet.id][x] = packet.list[x].cost;
+                this.graph_adj_lists[x][packet.id] = packet.list[x].cost;
+
 
 
             }
+
+
+
+
         }
+
+
+
+
+        return(console.log(this.direct_network_names))
     }
 
 
@@ -116,13 +142,13 @@ class router{
 let packer = new LSP();
 packer.id = 123;
 packer.sqn = 1;
-packer.list[4] = 5;
-packer.list[55] = 6;
-packer.list[100] = 3;
+packer.list[4]= {cost:"4",name:"Cipka"};
+packer.list[55] = {cost:"4",name:"Cipka"};
+packer.list[100] = {cost:"4",name:"Cipka"};
 // console.log(packer.list);
 let route = new router();
 route.receivePacket(packer);
-console.log(route.packetsqn);
+// console.log(route.packetsqn);
 /*
 console.log(packer.TTL);
 console.log(packer.sqn);
@@ -131,17 +157,25 @@ console.log(packer.sqn);
 let packer2 = new LSP();
 packer2.id = 123;
 packer2.sqn = 4;
-packer2.list[4] = 4;
-packer2.list[55] = 5;
-packer2.list[100] = 3;
+packer2.list[4] = {cost:"4",name:"Cipka"};
+packer2.list[55] = {cost:"4",name:"Cipka"};
+packer2.list[100] = {cost:"4",name:"Cipka"};
 route.receivePacket(packer2);
-console.log(route.packetsqn);
+// console.log(route.packetsqn);
 
 let packer3 = new LSP();
 packer3.id = 123;
 packer3.sqn = 3;
-packer3.list[4] = 99;
-packer3.list[55] = 5;
-packer3.list[100] = 3;
+packer3.list[4] = {cost:"4",name:"Cipka"};;
+packer3.list[100] = {cost:"4",name:"Cipka"};
 route.receivePacket(packer3);
-console.log(route.packetsqn);
+// console.log(route.packetsqn);
+
+let packer4 = new LSP();
+packer4.id = 4;
+packer4.sqn = 6;
+packer4.list[123] = {cost:"4",name:"Cipka"};
+packer4.list[7] = {cost:"4",name:"Cipka"};
+packer4.list[5] = {cost:"4",name:"Cipka"};
+route.receivePacket(packer4);
+// console.log(route.packetsqn);
