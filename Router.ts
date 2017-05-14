@@ -1,4 +1,5 @@
 import {LSP} from "./LSP";
+import {SPFA}from "./SPFA"
 /**
  * Created by mlyskawi on 5/14/2017.
  */
@@ -42,7 +43,11 @@ class router{
     public tick : number;
     public started :boolean;
     public packetsqn :any;
-    public direct_network_names: any;
+    public network_names: any;
+    private sqn: number;
+    private newLSP:LSP;
+    public myNeighbours: Object;
+
 
     /*public receivedFROM : number;*/
 
@@ -51,7 +56,9 @@ class router{
         this.started = true;
         this.graph_adj_lists = {};
         this.packetsqn = {};
-        this.direct_network_names = {};
+        this.network_names = {};
+        this.sqn = 0;
+        this.myNeighbours = {};
         /*this.receivedFROM = null;*/
     }
 
@@ -62,18 +69,15 @@ class router{
                 if (this.packetsqn[pack.id] != undefined){
                     if(this.packetsqn[pack.id] < pack.sqn){
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
-                        this.compareInformation(pack);
+                        return(this.compareInformation(pack));
 
                     }
-                    else{
-                        console.log("DISCARDED")
-                    }
+
 
                 }
                 else{
                     this.packetsqn[pack.id] = pack.sqn;// updating highest packet sqn
-                    console.log('new pack sqn2');
-                    this.compareInformation(pack);
+                    return(this.compareInformation(pack));
                 }
 
             }
@@ -90,24 +94,19 @@ class router{
 
         else{
             for(let x in packet.list){
-                this.direct_network_names[x] = packet.list[x].name
-                switch(undefined){
-                    case this.graph_adj_lists[x]:
-                        this.graph_adj_lists[x] = {};
-                        break;
-                    case this.graph_adj_lists[packet.id]:
-                        this.graph_adj_lists[packet.id] = {};
-                        break;
-
+                this.network_names[x] = packet.list[x].name;
+                if(this.graph_adj_lists[x] == undefined) {
+                    this.graph_adj_lists[x] = {};
                 }
+                if(this.graph_adj_lists[packet.id] == undefined) {
+                    this.graph_adj_lists[packet.id] = {};
+                }
+
                 // Build undirected graph
                 this.graph_adj_lists[packet.id][x] = packet.list[x].cost;
                 this.graph_adj_lists[x][packet.id] = packet.list[x].cost;
 
-
-
             }
-
 
 
 
@@ -115,9 +114,29 @@ class router{
 
 
 
-
-        return(console.log(this.direct_network_names))
+        return(SPFA.findShortest(this.graph_adj_lists,4,100)); // rember packet id is the id of the origenator of the pacekt not the id of this router
     }
+
+    public originatePacket(){
+        if(this.started){
+        // Generating LSP
+            this.sqn = this.sqn +1;
+            this.newLSP = new LSP;
+            this.newLSP.id = this.id;
+            this.newLSP.sqn = this.sqn;
+            this.newLSP.TTL = 10;
+            this.newLSP.list ={};
+
+            for (let i in this.myNeighbours){
+                this.newLSP.list[i] =this.myNeighbours[i]
+            }
+
+
+
+        }
+    }
+
+
 
 
 
@@ -147,35 +166,40 @@ packer.list[55] = {cost:"4",name:"Cipka"};
 packer.list[100] = {cost:"4",name:"Cipka"};
 // console.log(packer.list);
 let route = new router();
-route.receivePacket(packer);
-// console.log(route.packetsqn);
 /*
-console.log(packer.TTL);
-console.log(packer.sqn);
-*/
+ route.receivePacket(packer);
+ // console.log(route.packetsqn);
+ /!*
+ console.log(packer.TTL);
+ console.log(packer.sqn);
+ *!/
 
-let packer2 = new LSP();
-packer2.id = 123;
-packer2.sqn = 4;
-packer2.list[4] = {cost:"4",name:"Cipka"};
-packer2.list[55] = {cost:"4",name:"Cipka"};
-packer2.list[100] = {cost:"4",name:"Cipka"};
-route.receivePacket(packer2);
-// console.log(route.packetsqn);
+ let packer2 = new LSP();
+ packer2.id = 123;
+ packer2.sqn = 4;
+ packer2.list[4] = {cost:"4",name:"Cipka"};
+ packer2.list[55] = {cost:"4",name:"Cipka"};
+ packer2.list[100] = {cost:"4",name:"Cipka"};
+ route.receivePacket(packer2);
+ // console.log(route.packetsqn);
 
-let packer3 = new LSP();
-packer3.id = 123;
-packer3.sqn = 3;
-packer3.list[4] = {cost:"4",name:"Cipka"};;
-packer3.list[100] = {cost:"4",name:"Cipka"};
-route.receivePacket(packer3);
-// console.log(route.packetsqn);
+ let packer3 = new LSP();
+ packer3.id = 123;
+ packer3.sqn = 3;
+ packer3.list[4] = {cost:"4",name:"Cipka"};;
+ packer3.list[100] = {cost:"4",name:"Cipka"};
+ route.receivePacket(packer3);
+ // console.log(route.packetsqn);
 
-let packer4 = new LSP();
-packer4.id = 4;
-packer4.sqn = 6;
-packer4.list[123] = {cost:"4",name:"Cipka"};
-packer4.list[7] = {cost:"4",name:"Cipka"};
-packer4.list[5] = {cost:"4",name:"Cipka"};
-route.receivePacket(packer4);
-// console.log(route.packetsqn);
+ let packer4 = new LSP();
+ packer4.id = 4;
+ packer4.sqn = 6;
+ packer4.list[123] = {cost:"4",name:"Cipka"};
+ packer4.list[7] = {cost:"4",name:"Cipka"};
+ packer4.list[5] = {cost:"4",name:"Cipka"};
+ route.receivePacket(packer4);
+ // console.log(route.packetsqn);
+
+ */
+route.originatePacket();
+route.originatePacket();
