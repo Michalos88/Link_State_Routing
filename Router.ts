@@ -36,18 +36,20 @@ Each router should maintain a "routing table" consisting of <network, cost, outg
 
 class router{
     public id: number;
-    public list: any;
+    public graph_adj_lists: any;
     public network : string;
     public cost: number;
     public tick : number;
     public started :boolean;
     public packetsqn :any;
+    /*public receivedFROM : number;*/
 
     constructor(){
         this.id = null;
         this.started = true;
+        this.graph_adj_lists = {};
         this.packetsqn = {};
-
+        /*this.receivedFROM = null;*/
     }
 
     public receivePacket(pack:LSP){
@@ -57,7 +59,7 @@ class router{
                 if (this.packetsqn[pack.id] != undefined){
                     if(this.packetsqn[pack.id] < pack.sqn){
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
-                        console.log('new pack sqn1')
+                        this.comparePackets(pack);
 
                     }
                     else{
@@ -75,6 +77,21 @@ class router{
         }
     }
 
+
+    private comparePackets(packet:LSP){
+        //Recreate packet org network from LSP list data
+        if (packet.list == undefined){
+            console.log("Error: LSP list is empty");
+            return false
+        }
+        else{
+            for(let x in packet.list){
+                ;
+
+
+            }
+        }
+    }
 
 
 
@@ -118,4 +135,13 @@ packer2.list[4] = 4;
 packer2.list[55] = 5;
 packer2.list[100] = 3;
 route.receivePacket(packer2);
+console.log(route.packetsqn);
+
+let packer3 = new LSP();
+packer3.id = 123;
+packer3.sqn = 3;
+packer3.list[4] = 99;
+packer3.list[55] = 5;
+packer3.list[100] = 3;
+route.receivePacket(packer3);
 console.log(route.packetsqn);
