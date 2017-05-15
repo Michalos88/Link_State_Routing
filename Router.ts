@@ -47,6 +47,8 @@ export class router{
     private sqn: number;
     private newLSP:LSP;
     public myNeighbours: Object;
+    private paths: Object;
+    public routing: Object;
 
 
     /*public receivedFROM : number;*/
@@ -60,6 +62,7 @@ export class router{
         this.sqn = 0;
         this.myNeighbours = {};
         /*this.receivedFROM = null;*/
+        this.routing ={};
     }
 
     public receivePacket(pack:LSP){
@@ -94,7 +97,7 @@ export class router{
 
         else{
             for(let x in packet.list){
-                this.network_names[x] = packet.list[x].name;
+                this.network_names[x] = x;
                 if(this.graph_adj_lists[x] == undefined) {
                     this.graph_adj_lists[x] = {};
                 }
@@ -103,18 +106,34 @@ export class router{
                 }
 
                 // Build undirected graph
-                this.graph_adj_lists[packet.id][x] = packet.list[x].cost;
-                this.graph_adj_lists[x][packet.id] = packet.list[x].cost;
+                this.graph_adj_lists[packet.id][x] = packet.list[x];
+                this.graph_adj_lists[x][packet.id] = packet.list[x];
+
 
             }
 
-
+            // console.log(this.graph_adj_lists);
 
         }
 
 
 
-        return(SPFA.findShortest(this.graph_adj_lists,4,100)); // rember packet id is the id of the origenator of the pacekt not the id of this router
+        this.paths =(SPFA.findShortest(this.graph_adj_lists,this.id,this.cost));
+        //Writing Routing Table
+        for (let i in this.paths){
+            if(!(i in this.routing)){
+                this.routing[i] = {};
+            }
+            this.routing[i].cost = this.paths[i];
+            if(Number(i) == this.id){
+                this.routing[i].out = "-";
+            }
+            else{
+                this.routing[i].out = packet.id;
+            }
+
+        }
+        console.log(this.routing);
     }
 
     public originatePacket(){
@@ -130,7 +149,7 @@ export class router{
             for (let i in this.myNeighbours){
                 this.newLSP.list[i] = this.myNeighbours[i];
             }
-            console.log(this.newLSP.list);
+            return(this.newLSP);
 
 
         }

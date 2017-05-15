@@ -93,6 +93,8 @@ function menu(base){
                 r1.close();
                 break;
             case "P":
+                let LSSP = base[4].originatePacket();
+                base[1].receivePacket(LSSP);
                 r1.close();
                 return(menu(base));
             case "S":
