@@ -6,9 +6,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {router} from "./Router";
+import * as rl from 'readline';
 
-
-
+main();
 
 function main(){
     fs.readFile(path.join(__dirname,"infile"+".dat"),"utf-8", (err, file) => {
@@ -63,10 +63,46 @@ function main(){
                 }
 
             }
+            menu(base);
+
+
+
 
 
         }
 
-        console.log(base);
+
+    });
+}
+
+function menu(base){
+    let r1 = rl.createInterface(process.stdin, process.stdout);
+    let Mmenu = "";
+    r1.question(Mmenu, input => {
+        let temp = input.split("");
+        switch(temp[0]){
+            case "C":
+                for(let x in base){
+                    base[x].originatePacket()
+                }
+                r1.close();
+
+                return menu(base);
+
+            case "Q":
+                r1.close();
+                break;
+            case "P":
+                r1.close();
+                return(menu(base));
+            case "S":
+                base[temp[1]].started = false;
+                r1.close();
+                return(menu(base));
+            case "T":
+                base[temp[1]].started = true;
+                r1.close();
+                return(menu(base));
+        }
     });
 }

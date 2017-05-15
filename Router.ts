@@ -128,9 +128,9 @@ export class router{
             this.newLSP.list ={};
 
             for (let i in this.myNeighbours){
-                this.newLSP.list[i] =this.myNeighbours[i]
+                this.newLSP.list[i] = this.myNeighbours[i];
             }
-
+            console.log(this.newLSP.list);
 
 
         }
@@ -158,48 +158,49 @@ export class router{
 }
 
 
-let packer = new LSP();
-packer.id = 123;
-packer.sqn = 1;
-packer.list[4]= {cost:"4",name:"Cipka"};
-packer.list[55] = {cost:"4",name:"Cipka"};
-packer.list[100] = {cost:"4",name:"Cipka"};
-// console.log(packer.list);
-let route = new router();
-/*
- route.receivePacket(packer);
- // console.log(route.packetsqn);
- /!*
- console.log(packer.TTL);
- console.log(packer.sqn);
- *!/
-
- let packer2 = new LSP();
- packer2.id = 123;
- packer2.sqn = 4;
- packer2.list[4] = {cost:"4",name:"Cipka"};
- packer2.list[55] = {cost:"4",name:"Cipka"};
- packer2.list[100] = {cost:"4",name:"Cipka"};
- route.receivePacket(packer2);
- // console.log(route.packetsqn);
-
- let packer3 = new LSP();
- packer3.id = 123;
- packer3.sqn = 3;
- packer3.list[4] = {cost:"4",name:"Cipka"};;
- packer3.list[100] = {cost:"4",name:"Cipka"};
- route.receivePacket(packer3);
- // console.log(route.packetsqn);
-
- let packer4 = new LSP();
- packer4.id = 4;
- packer4.sqn = 6;
- packer4.list[123] = {cost:"4",name:"Cipka"};
- packer4.list[7] = {cost:"4",name:"Cipka"};
- packer4.list[5] = {cost:"4",name:"Cipka"};
- route.receivePacket(packer4);
- // console.log(route.packetsqn);
-
- */
-route.originatePacket();
-route.originatePacket();
+// let packer = new LSP();
+// packer.id = 123;
+// packer.sqn = 1;
+// packer.list[4]= {cost:"4",name:"Cipka"};
+// packer.list[55] = {cost:"4",name:"Cipka"};
+// packer.list[100] = {cost:"4",name:"Cipka"};
+// // console.log(packer.list);
+// let route = new router();
+// /*
+//  route.receivePacket(packer);
+//  // console.log(route.packetsqn);
+//  /!*
+//  console.log(packer.TTL);
+//  console.log(packer.sqn);
+//  *!/
+//
+//  let packer2 = new LSP();
+//  packer2.id = 123;
+//  packer2.sqn = 4;
+//  packer2.list[4] = {cost:"4",name:"Cipka"};
+//  packer2.list[55] = {cost:"4",name:"Cipka"};
+//  packer2.list[100] = {cost:"4",name:"Cipka"};
+//  route.receivePacket(packer2);
+//  // console.log(route.packetsqn);
+//
+//  let packer3 = new LSP();
+//  packer3.id = 123;
+//  packer3.sqn = 3;
+//  packer3.list[4] = {cost:"4",name:"Cipka"};;
+//  packer3.list[100] = {cost:"4",name:"Cipka"};
+//  route.receivePacket(packer3);
+//  // console.log(route.packetsqn);
+//
+//  let packer4 = new LSP();
+//  packer4.id = 4;
+//  packer4.sqn = 6;
+//  packer4.list[123] = {cost:"4",name:"Cipka"};
+//  packer4.list[7] = {cost:"4",name:"Cipka"};
+//  packer4.list[5] = {cost:"4",name:"Cipka"};
+//  route.receivePacket(packer4);
+//  // console.log(route.packetsqn);
+//
+//  */
+// /*
+// route.originatePacket();
+// route.originatePacket();*/
