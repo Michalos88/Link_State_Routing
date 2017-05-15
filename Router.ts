@@ -84,24 +84,19 @@ export class router{
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
                         this.received.push([pack.id]);
                         this.compareInformation(pack);
-                        pack.to = [];
-                        for(let x in this.myNeighbours){
-                            pack.to.push(x)  ;
-                        }
+
 
 
                         return(pack);
                     }
 
 
+
                 }
                 else{
                     this.packetsqn[pack.id] = pack.sqn;// updating highest packet sqn
                     this.compareInformation(pack);
-                    pack.to = [];
-                    for(let x in this.myNeighbours){
-                        pack.to.push(x)  ;
-                    }
+
 
                     return(pack);
                 }

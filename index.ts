@@ -79,8 +79,9 @@ export function main(){
 
 function menu(base){
     let r1 = rl.createInterface(process.stdin, process.stdout);
-    let Mmenu = "";
-    //TODO: MENU!!!!
+    let Mmenu = "\n##################Menu##################\n C -> Continue\n Q -> Quit\n P with id -> Routing table for a id router\n S with id -> Turn off a router\n T with if id -> Turn on a router\n########################################\n";
+
+
     r1.question(Mmenu, input => {
         let temp = input.split("");
         switch(temp[0]){
@@ -91,15 +92,15 @@ function menu(base){
                         for (let y in base[x].myNeighbours){
                             if(base[y].started){
                                 let d = base[y].receivePacket(packet);
-                                console.log(d.TTL);
-                                if(d.TTL>0){
-                                    for(let g in d.to ){
-                                        if (base[g].started){
-                                            base[g].receivePacket(d)
-                                        }
-
-                                    }
-                                }
+                                /*console.log(d.TTL);*/
+                                // if(d.TTL>=0){
+                                //     for(let g in d.to ){
+                                //         if (base[g].started){
+                                //             base[g].receivePacket(d)
+                                //         }
+                                //
+                                //     }
+                                // }
                             }
 
 
@@ -117,14 +118,20 @@ function menu(base){
                 r1.close();
                 break;
             case "P":
-                let table = base[temp[1]].routing;
-                for(let i in table){
-                    let output ="";
-                    let name = base[i].network;
-                    let comma = ", ";
-                    output=output+name+comma+table[i].cost+comma+table[i].out+"\n";
-                    console.log(output);
+                if (base[temp[1]].started){
+                    let table = base[temp[1]].routing;
+                    for(let i in table){
+                        if (base[i].started){
+                            let output ="";
+                            let name = base[i].network;
+                            let comma = ", ";
+                            output=output+name+comma+table[i].cost+comma+table[i].out+"\n";
+                            console.log(output);
+                        }
+
+                    }
                 }
+
                 r1.close();
                 return(menu(base));
             case "S":
