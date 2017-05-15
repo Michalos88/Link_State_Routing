@@ -10,7 +10,7 @@ import * as rl from 'readline';
 
 main();
 
-function main(){
+export function main(){
     fs.readFile(path.join(__dirname,"infile"+".dat"),"utf-8", (err, file) => {
         let base = undefined;
         if (err) console.error("An error occurred while opening the file!", err);
@@ -75,15 +75,27 @@ function main(){
     });
 }
 
+
+
 function menu(base){
     let r1 = rl.createInterface(process.stdin, process.stdout);
     let Mmenu = "";
+    //TODO: MENU!!!!
     r1.question(Mmenu, input => {
         let temp = input.split("");
         switch(temp[0]){
             case "C":
                 for(let x in base){
-                    base[x].originatePacket()
+                    let packet = base[x].originatePacket();
+                    for (let y in base[x].myNeighbours){
+                        let d = 1;
+                        if(base[y].started){
+                            base[y].receivePacket(packet);
+                        }
+
+
+                    }
+
                 }
                 r1.close();
 
@@ -93,8 +105,14 @@ function menu(base){
                 r1.close();
                 break;
             case "P":
-                let LSSP = base[4].originatePacket();
-                base[1].receivePacket(LSSP);
+                let table = base[temp[1]].routing;
+                for(let i in table){
+                    let output ="";
+                    let name = base[i].network;
+                    let comma = ", ";
+                    output=output+name+comma+table[i].cost+comma+table[i].out+"\n";
+                    console.log(output);
+                }
                 r1.close();
                 return(menu(base));
             case "S":

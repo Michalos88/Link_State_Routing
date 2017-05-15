@@ -1,5 +1,6 @@
 import {LSP} from "./LSP";
 import {SPFA}from "./SPFA"
+
 /**
  * Created by mlyskawi on 5/14/2017.
  */
@@ -49,7 +50,8 @@ export class router{
     public myNeighbours: Object;
     private paths: Object;
     public routing: Object;
-
+    private received: any;
+    // private from:Number;
 
     /*public receivedFROM : number;*/
 
@@ -63,6 +65,13 @@ export class router{
         this.myNeighbours = {};
         /*this.receivedFROM = null;*/
         this.routing ={};
+        this.tick = 0;
+        this.network = null;
+        this.received =[];
+        // this.from=null;
+
+
+
     }
 
     public receivePacket(pack:LSP){
@@ -72,18 +81,28 @@ export class router{
                 if (this.packetsqn[pack.id] != undefined){
                     if(this.packetsqn[pack.id] < pack.sqn){
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
-                        return(this.compareInformation(pack));
-
+                        this.received.push([pack.id]);
+                        this.compareInformation(pack);
+                        pack.to = this.myNeighbours;
+                        return(pack);
                     }
 
 
                 }
                 else{
                     this.packetsqn[pack.id] = pack.sqn;// updating highest packet sqn
-                    return(this.compareInformation(pack));
+                    this.compareInformation(pack);
+                    return(pack);
                 }
 
             }
+            else {
+                return(0)
+            }
+
+        }
+        else {
+            return(0)
         }
     }
 
@@ -123,17 +142,33 @@ export class router{
         for (let i in this.paths){
             if(!(i in this.routing)){
                 this.routing[i] = {};
-            }
-            this.routing[i].cost = this.paths[i];
-            if(Number(i) == this.id){
-                this.routing[i].out = "-";
+                this.routing[i].cost = this.paths[i];
+                if(Number(i) == this.id){
+                    this.routing[i].out = "-";
+                }
+                else{
+                    this.routing[i].out = packet.id;
+                }
             }
             else{
-                this.routing[i].out = packet.id;
+                if(this.paths[i] < this.routing[i].cost){
+                    this.routing[i].cost = this.paths[i];
+                    if(Number(i) == this.id){
+                        this.routing[i].out = "-";
+                    }
+                    else{
+                        this.routing[i].out = packet.id;
+                    }
+                }
+
             }
 
+
         }
-        console.log(this.routing);
+
+
+
+        // console.log(this.routing);
     }
 
     public originatePacket(){
@@ -145,11 +180,26 @@ export class router{
             this.newLSP.sqn = this.sqn;
             this.newLSP.TTL = 10;
             this.newLSP.list ={};
-
+            this.newLSP.to = this.myNeighbours;
+            this.tick = this.tick+1;
+            if (this.tick ==2){
+                for(let i in this.myNeighbours){
+                    if(!(i in this.received)){
+                        this.myNeighbours[i] = 999999999999999999999;
+                    }
+                }
+            }
+            //Orginaly LSP knows just of it direct connections
             for (let i in this.myNeighbours){
                 this.newLSP.list[i] = this.myNeighbours[i];
             }
+            // return(this.newLSP);
+
+
             return(this.newLSP);
+
+
+
 
 
         }
