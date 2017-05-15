@@ -35,7 +35,7 @@ Each router should maintain a "routing table" consisting of <network, cost, outg
 
 
 
-class router{
+export class router{
     public id: number;
     public graph_adj_lists: any;
     public network : string;
