@@ -1,5 +1,6 @@
 import {LSP} from "./LSP";
 import {SPFA}from "./SPFA"
+import {main}from "./index"
 
 /**
  * Created by mlyskawi on 5/14/2017.
@@ -83,7 +84,12 @@ export class router{
                         this.packetsqn[pack.id] = pack.sqn; // updating highest packet sqn
                         this.received.push([pack.id]);
                         this.compareInformation(pack);
-                        pack.to = this.myNeighbours;
+                        pack.to = [];
+                        for(let x in this.myNeighbours){
+                            pack.to.push(x)  ;
+                        }
+
+
                         return(pack);
                     }
 
@@ -92,17 +98,22 @@ export class router{
                 else{
                     this.packetsqn[pack.id] = pack.sqn;// updating highest packet sqn
                     this.compareInformation(pack);
+                    pack.to = [];
+                    for(let x in this.myNeighbours){
+                        pack.to.push(x)  ;
+                    }
+
                     return(pack);
                 }
 
             }
             else {
-                return(0)
+                return(pack)
             }
 
         }
         else {
-            return(0)
+            return(pack)
         }
     }
 
@@ -168,6 +179,7 @@ export class router{
 
 
 
+
         // console.log(this.routing);
     }
 
@@ -182,7 +194,7 @@ export class router{
             this.newLSP.list ={};
             this.newLSP.to = this.myNeighbours;
             this.tick = this.tick+1;
-            if (this.tick ==2){
+            if (this.tick >=2){
                 for(let i in this.myNeighbours){
                     if(!(i in this.received)){
                         this.myNeighbours[i] = 999999999999999999999;

@@ -86,15 +86,27 @@ function menu(base){
         switch(temp[0]){
             case "C":
                 for(let x in base){
-                    let packet = base[x].originatePacket();
-                    for (let y in base[x].myNeighbours){
-                        let d = 1;
-                        if(base[y].started){
-                            base[y].receivePacket(packet);
+                    if(base[x].started){
+                        let packet = base[x].originatePacket();
+                        for (let y in base[x].myNeighbours){
+                            if(base[y].started){
+                                let d = base[y].receivePacket(packet);
+                                console.log(d.TTL);
+                                if(d.TTL>0){
+                                    for(let g in d.to ){
+                                        if (base[g].started){
+                                            base[g].receivePacket(d)
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+
                         }
-
-
                     }
+
 
                 }
                 r1.close();
